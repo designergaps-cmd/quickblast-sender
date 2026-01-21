@@ -1,308 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QuickBlast Pro - Smart Sender</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
-                    animation: { 'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite' }
-                }
-            }
-        }
-    </script>
-    <style>
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
-        .glass-panel {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-    </style>
-</head>
-<body class="bg-[#0B1120] text-slate-300 min-h-screen font-sans selection:bg-indigo-500 selection:text-white">
+<div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333333; line-height: 1.6; font-size: 14px;">
 
-    <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10">
-        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-900/20 rounded-full blur-[120px]"></div>
-        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-900/20 rounded-full blur-[120px]"></div>
+    <h2 style="color: #111827; font-size: 20px; font-weight: 800; margin-top: 0; margin-bottom: 20px;">
+        {{subject}}
+    </h2>
+
+    <div style="font-size: 15px; color: #4b5563;">
+        {{message}}
+    </div>
+    
+    <br>
+
+    <div style="margin: 20px 0;">
+        <a href="{{attach_link}}" style="background-color: #F3F4F6; color: #374151; padding: 10px 15px; text-decoration: none; border-radius: 6px; font-weight: bold; border: 1px solid #D1D5DB; display: inline-block; font-size: 13px;">
+            📥 Download Attachment (附件下载)
+        </a>
     </div>
 
-    <div class="max-w-7xl mx-auto p-4 lg:p-8">
-        
-        <header class="flex items-center justify-between mb-8 border-b border-white/5 pb-6">
-            <div class="flex items-center gap-3">
-                <div class="bg-gradient-to-br from-indigo-500 to-purple-600 p-2.5 rounded-xl shadow-lg shadow-indigo-500/20">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                    </svg>
-                </div>
-                <div>
-                    <h1 class="text-2xl font-bold text-white tracking-tight">QuickBlast <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">PRO</span></h1>
-                    <p class="text-xs text-slate-500 font-medium tracking-wide">SMART BATCH SENDER / 智能批量发送</p>
-                </div>
-            </div>
-            <div id="statusIndicator" class="hidden flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-500/10 border border-green-500/20">
-                <span class="relative flex h-2 w-2">
-                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                  <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                </span>
-                <span class="text-xs font-semibold text-green-400">Config Loaded / 配置已加载</span>
-            </div>
-        </header>
+    <br>
+    <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 20px 0;">
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            
-            <div class="lg:col-span-7 space-y-6">
-                
-                <div class="glass-panel rounded-2xl p-6 shadow-2xl">
-                    <div class="flex items-center gap-2 mb-5">
-                        <div class="w-6 h-6 rounded-full bg-slate-700/50 flex items-center justify-center text-xs font-bold text-white border border-white/10">1</div>
-                        <h2 class="text-sm font-bold text-white uppercase tracking-wider">Configuration / 连接配置</h2>
-                    </div>
-                    
-                    <div class="grid gap-4">
-                        <div class="relative group">
-                            <label class="block text-[10px] uppercase font-bold text-slate-500 mb-1 ml-1">Service ID</label>
-                            <input type="text" id="serviceId" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-3 text-sm text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition outline-none placeholder-slate-600" placeholder="service_xxxx">
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-[10px] uppercase font-bold text-slate-500 mb-1 ml-1">Template ID</label>
-                                <input type="text" id="templateId" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-3 text-sm text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition outline-none placeholder-slate-600" placeholder="template_xxxx">
-                            </div>
-                            <div>
-                                <label class="block text-[10px] uppercase font-bold text-slate-500 mb-1 ml-1">Public Key</label>
-                                <input type="password" id="publicKey" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-3 text-sm text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition outline-none placeholder-slate-600" placeholder="API Key">
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <h3 style="font-size: 16px; font-weight: bold; color: #111827; margin: 0 0 8px 0;">
+        Global Asia Printings | Affordable Corporate Gifts
+    </h3>
+    <p style="font-size: 13px; color: #4b5563; margin: 0 0 24px 0;">
+        📍 66 Tannery Ln, #02-06 Sindo Building, Singapore 347805
+    </p>
 
-                <div class="glass-panel rounded-2xl p-6 shadow-2xl">
-                    <div class="flex items-center gap-2 mb-5">
-                        <div class="w-6 h-6 rounded-full bg-slate-700/50 flex items-center justify-center text-xs font-bold text-white border border-white/10">2</div>
-                        <h2 class="text-sm font-bold text-white uppercase tracking-wider">Email Content / 邮件内容</h2>
-                    </div>
+    <a href="https://globalasiaprintings.com/" style="background-color: #10B981; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 14px; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.2); display: inline-block;">
+        Visit Official Website &rarr;
+    </a>
 
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-[10px] uppercase font-bold text-slate-500 mb-1 ml-1">Subject</label>
-                            <input type="text" id="emailSubject" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-3 text-sm text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition outline-none placeholder-slate-600 font-medium" placeholder="Enter email subject...">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] uppercase font-bold text-slate-500 mb-1 ml-1">Message</label>
-                            <textarea id="emailBody" rows="8" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-3 text-sm text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition outline-none placeholder-slate-600 resize-none leading-relaxed" placeholder="Type your message here..."></textarea>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="lg:col-span-5 space-y-6 flex flex-col h-full">
-                
-                <div class="bg-white rounded-2xl p-1 shadow-2xl flex-1 flex flex-col min-h-[300px]">
-                    <div class="bg-slate-50 rounded-t-xl px-4 py-3 border-b border-slate-200 flex justify-between items-center">
-                        <h2 class="text-xs font-bold text-slate-600 uppercase tracking-wider">Recipient List / 目标邮箱</h2>
-                        <span id="countBadge" class="bg-indigo-100 text-indigo-700 text-[10px] font-bold px-2 py-0.5 rounded-md border border-indigo-200">0 EMAILS</span>
-                    </div>
-                    <textarea id="emailList" class="flex-1 w-full bg-white p-4 text-sm font-mono text-slate-700 focus:outline-none resize-none rounded-b-xl" placeholder="✨ Smart Paste Enabled:&#10;Paste from Excel, CSV, or list.&#10;Auto-formats on paste!&#10;&#10;user1@example.com&#10;user2@example.com"></textarea>
-                </div>
-
-                <div class="glass-panel rounded-2xl p-1 shadow-2xl border-slate-800 bg-[#0f172a] flex flex-col">
-                    <div class="bg-[#1e293b] rounded-t-xl px-4 py-2 flex justify-between items-center border-b border-slate-700">
-                        <div class="flex gap-1.5">
-                            <div class="w-2.5 h-2.5 rounded-full bg-red-500/80"></div>
-                            <div class="w-2.5 h-2.5 rounded-full bg-yellow-500/80"></div>
-                            <div class="w-2.5 h-2.5 rounded-full bg-green-500/80"></div>
-                        </div>
-                        <h2 class="text-[10px] font-mono text-slate-400">CONSOLE LOG</h2>
-                        <button onclick="clearLog()" class="text-[10px] text-slate-500 hover:text-white transition cursor-pointer">CLEAR</button>
-                    </div>
-
-                    <div id="logWindow" class="h-48 overflow-y-auto p-4 font-mono text-xs space-y-1.5 bg-[#0f172a]/80 text-slate-400">
-                        <div class="text-slate-600 italic">>> System ready. Paste emails to begin.</div>
-                    </div>
-
-                    <div class="p-4 bg-[#1e293b] rounded-b-xl border-t border-slate-700">
-                        <div class="w-full bg-slate-700/50 rounded-full h-1.5 mb-4 overflow-hidden">
-                            <div id="progressBar" class="bg-gradient-to-r from-indigo-500 to-purple-500 h-1.5 rounded-full transition-all duration-300" style="width: 0%"></div>
-                        </div>
-                        
-                        <button id="sendBtn" onclick="startSending()" class="group w-full relative overflow-hidden bg-white text-slate-900 font-bold py-3.5 rounded-lg shadow-lg hover:shadow-indigo-500/25 transition-all duration-200 active:scale-[0.98]">
-                            <span class="relative flex items-center justify-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-600" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
-                                </svg>
-                                <span>LAUNCH CAMPAIGN / 立即发送</span>
-                            </span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="mt-8 text-center text-xs text-slate-600">
-            <p>Designed for Fun Print AI | High-Performance Email Tool</p>
-        </div>
-
-    </div>
-
-    <script>
-        // --- 初始化与自动保存 ---
-        window.onload = function() {
-            const savedService = localStorage.getItem('qb_service_id');
-            const savedTemplate = localStorage.getItem('qb_template_id');
-            const savedKey = localStorage.getItem('qb_public_key');
-
-            if (savedService) document.getElementById('serviceId').value = savedService;
-            if (savedTemplate) document.getElementById('templateId').value = savedTemplate;
-            if (savedKey) document.getElementById('publicKey').value = savedKey;
-
-            if (savedService && savedTemplate && savedKey) {
-                document.getElementById('statusIndicator').classList.remove('hidden');
-            }
-        };
-
-        function saveConfig() {
-            const serviceId = document.getElementById('serviceId').value.trim();
-            const templateId = document.getElementById('templateId').value.trim();
-            const publicKey = document.getElementById('publicKey').value.trim();
-
-            if (serviceId) localStorage.setItem('qb_service_id', serviceId);
-            if (templateId) localStorage.setItem('qb_template_id', templateId);
-            if (publicKey) localStorage.setItem('qb_public_key', publicKey);
-            document.getElementById('statusIndicator').classList.remove('hidden');
-        }
-
-        // --- 🧠 核心升级：智能粘贴处理 (Smart Paste) ---
-        // 自动将 Excel、逗号分隔、空格分隔的内容转换为一行一个
-        const emailInput = document.getElementById('emailList');
-        
-        function processEmailList(rawText) {
-            // 正则表达式：匹配 逗号、分号、空格、制表符、换行符
-            // 将这些分隔符全部统一替换为换行符
-            return rawText.split(/[\n,;\t ]+/).filter(t => t.trim() !== '').join('\n');
-        }
-
-        emailInput.addEventListener('input', function(e) {
-            // 实时更新计数
-            const lines = e.target.value.split('\n').filter(line => line.trim() !== '');
-            document.getElementById('countBadge').innerText = `${lines.length} EMAILS`;
-        });
-
-        // 当用户粘贴时，自动格式化
-        emailInput.addEventListener('paste', function(e) {
-            // 延迟一点点执行，确保粘贴动作完成
-            setTimeout(() => {
-                const originalText = emailInput.value;
-                const formattedText = processEmailList(originalText);
-                
-                // 如果格式化后的内容变了，才更新（避免光标跳动）
-                if (originalText !== formattedText) {
-                    emailInput.value = formattedText;
-                    // 更新计数器
-                    const count = formattedText.split('\n').length;
-                    document.getElementById('countBadge').innerText = `${count} EMAILS`;
-                    addLog('✨ Auto-formatted recipient list from paste.', 'success');
-                }
-            }, 50);
-        });
-        // ---------------------------------------------
-
-        const logWindow = document.getElementById('logWindow');
-        const progressBar = document.getElementById('progressBar');
-
-        function addLog(msg, type = 'info') {
-            const div = document.createElement('div');
-            const now = new Date();
-            const timestamp = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
-            
-            if (type === 'success') div.className = 'text-green-400 border-l-2 border-green-500 pl-2';
-            else if (type === 'error') div.className = 'text-red-400 border-l-2 border-red-500 pl-2';
-            else div.className = 'text-slate-400 border-l-2 border-slate-700 pl-2';
-            
-            div.innerHTML = `<span class="opacity-30 mr-2 font-mono text-[10px]">${timestamp}</span>${msg}`;
-            logWindow.appendChild(div);
-            logWindow.scrollTop = logWindow.scrollHeight;
-        }
-
-        function clearLog() {
-            logWindow.innerHTML = '<div class="text-slate-600 italic">>> Console cleared.</div>';
-        }
-
-        async function startSending() {
-            const serviceId = document.getElementById('serviceId').value.trim();
-            const templateId = document.getElementById('templateId').value.trim();
-            const publicKey = document.getElementById('publicKey').value.trim();
-            
-            const subject = document.getElementById('emailSubject').value;
-            const message = document.getElementById('emailBody').value;
-            // 发送前再做一次最终清洗，确保万无一失
-            const emailText = processEmailList(document.getElementById('emailList').value);
-
-            if (!serviceId || !templateId || !publicKey) {
-                addLog('Error: Missing configuration settings.', 'error');
-                alert('Please check your EmailJS configuration / 请检查配置信息');
-                return;
-            }
-            if (!emailText.trim()) {
-                addLog('Error: No recipients found.', 'error');
-                alert('Please enter email addresses / 请输入目标邮箱');
-                return;
-            }
-
-            saveConfig();
-            emailjs.init(publicKey);
-
-            const emails = emailText.split('\n');
-            const total = emails.length;
-            
-            const btn = document.getElementById('sendBtn');
-            const originalBtnContent = btn.innerHTML;
-            
-            btn.disabled = true;
-            btn.classList.add('opacity-50', 'cursor-not-allowed', 'grayscale');
-            btn.innerHTML = '<span class="animate-pulse">SENDING / 发送中...</span>';
-            
-            clearLog();
-            addLog(`🚀 STARTED... Target: ${total} recipients`);
-
-            for (let i = 0; i < total; i++) {
-                const email = emails[i].trim();
-                
-                try {
-                    await emailjs.send(serviceId, templateId, {
-                        to_email: email,
-                        to_name: email.split('@')[0],
-                        subject: subject,
-                        message: message
-                    });
-                    
-                    addLog(`[200 OK] Sent to: ${email}`, 'success');
-                } catch (error) {
-                    console.error(error);
-                    addLog(`[FAIL] Error sending to: ${email}`, 'error');
-                }
-
-                const percent = Math.round(((i + 1) / total) * 100);
-                progressBar.style.width = `${percent}%`;
-
-                await new Promise(resolve => setTimeout(resolve, 500));
-            }
-
-            addLog('✅ BATCH COMPLETED / 任务完成');
-            btn.disabled = false;
-            btn.classList.remove('opacity-50', 'cursor-not-allowed', 'grayscale');
-            btn.innerHTML = originalBtnContent;
-        }
-    </script>
-</body>
-</html>
+</div>
