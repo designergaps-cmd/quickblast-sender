@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QuickBlast Pro - Email Sender</title>
+    <title>QuickBlast Pro - Smart Sender</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script>
@@ -17,7 +17,6 @@
         }
     </script>
     <style>
-        /* 自定义滚动条样式 */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
@@ -48,7 +47,7 @@
                 </div>
                 <div>
                     <h1 class="text-2xl font-bold text-white tracking-tight">QuickBlast <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">PRO</span></h1>
-                    <p class="text-xs text-slate-500 font-medium tracking-wide">BULK EMAIL SENDER / 批量邮件发送工具</p>
+                    <p class="text-xs text-slate-500 font-medium tracking-wide">SMART BATCH SENDER / 智能批量发送</p>
                 </div>
             </div>
             <div id="statusIndicator" class="hidden flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-500/10 border border-green-500/20">
@@ -72,23 +71,19 @@
                     
                     <div class="grid gap-4">
                         <div class="relative group">
-                            <label class="block text-[10px] uppercase font-bold text-slate-500 mb-1 ml-1">Service ID (服务 ID)</label>
-                            <input type="text" id="serviceId" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-3 text-sm text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition outline-none placeholder-slate-600" placeholder="e.g. service_xxxx">
+                            <label class="block text-[10px] uppercase font-bold text-slate-500 mb-1 ml-1">Service ID</label>
+                            <input type="text" id="serviceId" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-3 text-sm text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition outline-none placeholder-slate-600" placeholder="service_xxxx">
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-[10px] uppercase font-bold text-slate-500 mb-1 ml-1">Template ID (模板 ID)</label>
-                                <input type="text" id="templateId" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-3 text-sm text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition outline-none placeholder-slate-600" placeholder="e.g. template_xxxx">
+                                <label class="block text-[10px] uppercase font-bold text-slate-500 mb-1 ml-1">Template ID</label>
+                                <input type="text" id="templateId" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-3 text-sm text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition outline-none placeholder-slate-600" placeholder="template_xxxx">
                             </div>
                             <div>
-                                <label class="block text-[10px] uppercase font-bold text-slate-500 mb-1 ml-1">Public Key (API 密钥)</label>
-                                <input type="password" id="publicKey" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-3 text-sm text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition outline-none placeholder-slate-600" placeholder="e.g. 7CedVX...">
+                                <label class="block text-[10px] uppercase font-bold text-slate-500 mb-1 ml-1">Public Key</label>
+                                <input type="password" id="publicKey" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-3 text-sm text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition outline-none placeholder-slate-600" placeholder="API Key">
                             </div>
                         </div>
-                    </div>
-                    <div class="mt-4 flex items-start gap-2 text-xs text-indigo-300/80 bg-indigo-500/5 p-3 rounded-lg border border-indigo-500/10">
-                        <svg class="w-4 h-4 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        <p>Credentials are auto-saved locally. / 配置信息将自动保存在本地，下次无需重新输入。</p>
                     </div>
                 </div>
 
@@ -100,11 +95,11 @@
 
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-[10px] uppercase font-bold text-slate-500 mb-1 ml-1">Subject (标题)</label>
+                            <label class="block text-[10px] uppercase font-bold text-slate-500 mb-1 ml-1">Subject</label>
                             <input type="text" id="emailSubject" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-3 text-sm text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition outline-none placeholder-slate-600 font-medium" placeholder="Enter email subject...">
                         </div>
                         <div>
-                            <label class="block text-[10px] uppercase font-bold text-slate-500 mb-1 ml-1">Message (正文)</label>
+                            <label class="block text-[10px] uppercase font-bold text-slate-500 mb-1 ml-1">Message</label>
                             <textarea id="emailBody" rows="8" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-3 text-sm text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition outline-none placeholder-slate-600 resize-none leading-relaxed" placeholder="Type your message here..."></textarea>
                         </div>
                     </div>
@@ -118,7 +113,7 @@
                         <h2 class="text-xs font-bold text-slate-600 uppercase tracking-wider">Recipient List / 目标邮箱</h2>
                         <span id="countBadge" class="bg-indigo-100 text-indigo-700 text-[10px] font-bold px-2 py-0.5 rounded-md border border-indigo-200">0 EMAILS</span>
                     </div>
-                    <textarea id="emailList" class="flex-1 w-full bg-white p-4 text-sm font-mono text-slate-700 focus:outline-none resize-none rounded-b-xl" placeholder="Paste emails here (one per line)...&#10;user1@example.com&#10;user2@example.com"></textarea>
+                    <textarea id="emailList" class="flex-1 w-full bg-white p-4 text-sm font-mono text-slate-700 focus:outline-none resize-none rounded-b-xl" placeholder="✨ Smart Paste Enabled:&#10;Paste from Excel, CSV, or list.&#10;Auto-formats on paste!&#10;&#10;user1@example.com&#10;user2@example.com"></textarea>
                 </div>
 
                 <div class="glass-panel rounded-2xl p-1 shadow-2xl border-slate-800 bg-[#0f172a] flex flex-col">
@@ -133,16 +128,15 @@
                     </div>
 
                     <div id="logWindow" class="h-48 overflow-y-auto p-4 font-mono text-xs space-y-1.5 bg-[#0f172a]/80 text-slate-400">
-                        <div class="text-slate-600 italic">>> System ready. Waiting for input...</div>
+                        <div class="text-slate-600 italic">>> System ready. Paste emails to begin.</div>
                     </div>
 
                     <div class="p-4 bg-[#1e293b] rounded-b-xl border-t border-slate-700">
                         <div class="w-full bg-slate-700/50 rounded-full h-1.5 mb-4 overflow-hidden">
-                            <div id="progressBar" class="bg-gradient-to-r from-indigo-500 to-purple-500 h-1.5 rounded-full transition-all duration-300 shadow-[0_0_10px_rgba(99,102,241,0.5)]" style="width: 0%"></div>
+                            <div id="progressBar" class="bg-gradient-to-r from-indigo-500 to-purple-500 h-1.5 rounded-full transition-all duration-300" style="width: 0%"></div>
                         </div>
                         
                         <button id="sendBtn" onclick="startSending()" class="group w-full relative overflow-hidden bg-white text-slate-900 font-bold py-3.5 rounded-lg shadow-lg hover:shadow-indigo-500/25 transition-all duration-200 active:scale-[0.98]">
-                            <div class="absolute inset-0 w-full h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
                             <span class="relative flex items-center justify-center gap-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-600" viewBox="0 0 20 20" fill="currentColor">
                                     <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
@@ -152,18 +146,17 @@
                         </button>
                     </div>
                 </div>
-
             </div>
         </div>
         
         <div class="mt-8 text-center text-xs text-slate-600">
-            <p>Designed for High-Performance Email Marketing</p>
+            <p>Designed for Fun Print AI | High-Performance Email Tool</p>
         </div>
 
     </div>
 
     <script>
-        // --- 核心功能 (保持不变) ---
+        // --- 初始化与自动保存 ---
         window.onload = function() {
             const savedService = localStorage.getItem('qb_service_id');
             const savedTemplate = localStorage.getItem('qb_template_id');
@@ -186,14 +179,43 @@
             if (serviceId) localStorage.setItem('qb_service_id', serviceId);
             if (templateId) localStorage.setItem('qb_template_id', templateId);
             if (publicKey) localStorage.setItem('qb_public_key', publicKey);
-            
             document.getElementById('statusIndicator').classList.remove('hidden');
         }
 
-        document.getElementById('emailList').addEventListener('input', function(e) {
+        // --- 🧠 核心升级：智能粘贴处理 (Smart Paste) ---
+        // 自动将 Excel、逗号分隔、空格分隔的内容转换为一行一个
+        const emailInput = document.getElementById('emailList');
+        
+        function processEmailList(rawText) {
+            // 正则表达式：匹配 逗号、分号、空格、制表符、换行符
+            // 将这些分隔符全部统一替换为换行符
+            return rawText.split(/[\n,;\t ]+/).filter(t => t.trim() !== '').join('\n');
+        }
+
+        emailInput.addEventListener('input', function(e) {
+            // 实时更新计数
             const lines = e.target.value.split('\n').filter(line => line.trim() !== '');
             document.getElementById('countBadge').innerText = `${lines.length} EMAILS`;
         });
+
+        // 当用户粘贴时，自动格式化
+        emailInput.addEventListener('paste', function(e) {
+            // 延迟一点点执行，确保粘贴动作完成
+            setTimeout(() => {
+                const originalText = emailInput.value;
+                const formattedText = processEmailList(originalText);
+                
+                // 如果格式化后的内容变了，才更新（避免光标跳动）
+                if (originalText !== formattedText) {
+                    emailInput.value = formattedText;
+                    // 更新计数器
+                    const count = formattedText.split('\n').length;
+                    document.getElementById('countBadge').innerText = `${count} EMAILS`;
+                    addLog('✨ Auto-formatted recipient list from paste.', 'success');
+                }
+            }, 50);
+        });
+        // ---------------------------------------------
 
         const logWindow = document.getElementById('logWindow');
         const progressBar = document.getElementById('progressBar');
@@ -223,7 +245,8 @@
             
             const subject = document.getElementById('emailSubject').value;
             const message = document.getElementById('emailBody').value;
-            const emailText = document.getElementById('emailList').value;
+            // 发送前再做一次最终清洗，确保万无一失
+            const emailText = processEmailList(document.getElementById('emailList').value);
 
             if (!serviceId || !templateId || !publicKey) {
                 addLog('Error: Missing configuration settings.', 'error');
@@ -239,7 +262,7 @@
             saveConfig();
             emailjs.init(publicKey);
 
-            const emails = emailText.split('\n').filter(line => line.trim() !== '');
+            const emails = emailText.split('\n');
             const total = emails.length;
             
             const btn = document.getElementById('sendBtn');
@@ -250,7 +273,7 @@
             btn.innerHTML = '<span class="animate-pulse">SENDING / 发送中...</span>';
             
             clearLog();
-            addLog(`🚀 INITIALIZING SEQUENCE... Target: ${total} recipients`);
+            addLog(`🚀 STARTED... Target: ${total} recipients`);
 
             for (let i = 0; i < total; i++) {
                 const email = emails[i].trim();
