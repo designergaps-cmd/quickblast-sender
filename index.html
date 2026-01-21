@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickBlast Pro - 邮件群发工具</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script>
+        // 初始化 Tailwind 配置，以此匹配截图的深色模式
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slate: { 850: '#1e293b', 900: '#0f172a' }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-900 text-white min-h-screen font-sans p-6">
+
+    <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
+        
+        <div class="space-y-6">
+            <div class="flex items-center space-x-2 mb-4">
+                <div class="bg-indigo-600 p-2 rounded-lg">🚀</div>
+                <h1 class="text-2xl font-bold tracking-wider">QUICKBLAST <span class="text-indigo-400 text-sm">PRO</span></h1>
+            </div>
+
+            <div class="bg-slate-800 rounded-xl p-6 border border-slate-700 shadow-lg">
+                <h2 class="text-sm font-semibold text-indigo-400 mb-4 uppercase tracking-wide">1. 连接配置 (EmailJS)</h2>
+                <div class="space-y-3">
+                    <input type="text" id="serviceId" placeholder="Service ID (例如 service_xxx)" class="w-full bg-slate-900 border border-slate-700 rounded p-3 text-sm focus:border-indigo-500 focus:outline-none transition">
+                    <input type="text" id="templateId" placeholder="Template ID (例如 template_xxx)" class="w-full bg-slate-900 border border-slate-700 rounded p-3 text-sm focus:border-indigo-500 focus:outline-none transition">
+                    <input type="text" id="publicKey" placeholder="Public Key (API Key)" class="w-full bg-slate-900 border border-slate-700 rounded p-3 text-sm focus:border-indigo-500 focus:outline-none transition">
+                </div>
+                <div class="mt-4 bg-indigo-900/30 p-3 rounded text-xs text-indigo-200">
+                    <p>💡 提示: 在 EmailJS 后台创建模板时，请使用 <code>{{to_name}}</code>, <code>{{subject}}</code>, <code>{{message}}</code> 作为变量。</p>
+                </div>
+            </div>
+
+            <div class="bg-slate-800 rounded-xl p-6 border border-slate-700 shadow-lg">
+                <h2 class="text-sm font-semibold text-indigo-400 mb-4 uppercase tracking-wide">2. 邮件内容</h2>
+                <div class="space-y-3">
+                    <input type="text" id="emailSubject" placeholder="邮件标题" class="w-full bg-slate-900 border border-slate-700 rounded p-3 text-sm focus:border-indigo-500 focus:outline-none">
+                    <textarea id="emailBody" rows="6" placeholder="邮件正文内容..." class="w-full bg-slate-900 border border-slate-700 rounded p-3 text-sm focus:border-indigo-500 focus:outline-none"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="space-y-6 flex flex-col h-full">
+            
+            <div class="bg-white text-slate-900 rounded-xl p-6 shadow-lg flex-1">
+                <div class="flex justify-between items-center mb-2">
+                    <h2 class="text-sm font-bold uppercase text-slate-500">3. 目标邮箱列表</h2>
+                    <span id="countBadge" class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full">0 个联系人</span>
+                </div>
+                <textarea id="emailList" class="w-full h-48 bg-slate-50 border border-slate-200 rounded p-3 text-sm font-mono focus:border-indigo-500 focus:outline-none resize-none" placeholder="在此粘贴邮箱地址，一行一个...&#10;user1@example.com&#10;user2@example.com"></textarea>
+                <p class="text-xs text-slate-400 mt-2 text-right">支持批量粘贴，自动过滤空行</p>
+            </div>
+
+            <div class="bg-slate-950 rounded-xl p-6 border border-slate-800 flex-1 flex flex-col shadow-2xl relative overflow-hidden">
+                <div class="flex justify-between items-center mb-4 z-10">
+                    <h2 class="text-sm font-semibold text-white">发送队列监控</h2>
+                    <button onclick="clearLog()" class="text-xs text-slate-500 hover:text-white transition">清除记录</button>
+                </div>
+                
+                <div id="logWindow" class="flex-1 overflow-y-auto font-mono text-xs space-y-2 mb-4 p-2 bg-slate-900/50 rounded h-40">
+                    <div class="text-slate-500 italic">>> 等待任务开始...</div>
+                </div>
+
+                <div class="w-full bg-slate-800 rounded-full h-1.5 mb-4 overflow-hidden">
+                    <div id="progressBar" class="bg-indigo-500 h-1.5 rounded-full" style="width: 0%"></div>
+                </div>
+
+                <button id="sendBtn" onclick="startSending()" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold py-4 rounded-lg shadow-lg transform transition active:scale-95 flex items-center justify-center space-x-2 z-10">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+                    </svg>
+                    <span>开启真实发送模式</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 实时更新邮箱数量
+        document.getElementById('emailList').addEventListener('input', function(e) {
+            const lines = e.target.value.split('\n').filter(line => line.trim() !== '');
+            document.getElementById('countBadge').innerText = `${lines.length} 个联系人`;
+        });
+
+        const logWindow = document.getElementById('logWindow');
+        const progressBar = document.getElementById('progressBar');
+
+        function addLog(msg, type = 'info') {
+            const div = document.createElement('div');
+            const timestamp = new Date().toLocaleTimeString();
+            if (type === 'success') div.className = 'text-green-400';
+            else if (type === 'error') div.className = 'text-red-400';
+            else div.className = 'text-slate-300';
+            
+            div.innerHTML = `<span class="opacity-50">[${timestamp}]</span> ${msg}`;
+            logWindow.appendChild(div);
+            logWindow.scrollTop = logWindow.scrollHeight;
+        }
+
+        function clearLog() {
+            logWindow.innerHTML = '';
+        }
+
+        async function startSending() {
+            // 1. 获取配置
+            const serviceId = document.getElementById('serviceId').value.trim();
+            const templateId = document.getElementById('templateId').value.trim();
+            const publicKey = document.getElementById('publicKey').value.trim();
+            
+            const subject = document.getElementById('emailSubject').value;
+            const message = document.getElementById('emailBody').value;
+            const emailText = document.getElementById('emailList').value;
+
+            // 2. 验证
+            if (!serviceId || !templateId || !publicKey) {
+                alert('请先填写完整的 EmailJS 配置信息 (ID 和 Key)');
+                return;
+            }
+            if (!emailText.trim()) {
+                alert('请输入目标邮箱地址');
+                return;
+            }
+
+            // 初始化 EmailJS
+            emailjs.init(publicKey);
+
+            // 处理邮箱列表
+            const emails = emailText.split('\n').filter(line => line.trim() !== '');
+            const total = emails.length;
+            
+            const btn = document.getElementById('sendBtn');
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+            btn.innerText = '发送中...';
+            
+            clearLog();
+            addLog(`🚀 任务开始，共 ${total} 封邮件`);
+
+            // 3. 循环发送
+            for (let i = 0; i < total; i++) {
+                const email = emails[i].trim();
+                
+                try {
+                    // 发送逻辑
+                    await emailjs.send(serviceId, templateId, {
+                        to_email: email,      // 对应 EmailJS 模板中的 {{to_email}}
+                        to_name: email.split('@')[0], // 简单的名字提取，对应 {{to_name}}
+                        subject: subject,     // 对应 {{subject}}
+                        message: message      // 对应 {{message}}
+                    });
+                    
+                    addLog(`✅ 发送成功: ${email}`, 'success');
+                } catch (error) {
+                    console.error(error);
+                    addLog(`❌ 发送失败: ${email} - ${error.text || '未知错误'}`, 'error');
+                }
+
+                // 更新进度条
+                const percent = Math.round(((i + 1) / total) * 100);
+                progressBar.style.width = `${percent}%`;
+
+                // ⚠️ 关键：稍微等待一下，防止触发频率限制 (500ms)
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+
+            addLog('🏁 所有任务执行完毕！');
+            btn.disabled = false;
+            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+            btn.innerText = '开启真实发送模式';
+        }
+    </script>
+</body>
+</html>
