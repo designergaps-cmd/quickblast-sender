@@ -7,7 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script>
-        // 初始化 Tailwind 配置，以此匹配截图的深色模式
         tailwind.config = {
             theme: {
                 extend: {
@@ -29,15 +28,18 @@
                 <h1 class="text-2xl font-bold tracking-wider">QUICKBLAST <span class="text-indigo-400 text-sm">PRO</span></h1>
             </div>
 
-            <div class="bg-slate-800 rounded-xl p-6 border border-slate-700 shadow-lg">
-                <h2 class="text-sm font-semibold text-indigo-400 mb-4 uppercase tracking-wide">1. 连接配置 (EmailJS)</h2>
+            <div class="bg-slate-800 rounded-xl p-6 border border-slate-700 shadow-lg relative">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-sm font-semibold text-indigo-400 uppercase tracking-wide">1. 连接配置 (EmailJS)</h2>
+                    <span class="text-xs text-green-400 hidden" id="savedBadge">✨ 已自动读取配置</span>
+                </div>
                 <div class="space-y-3">
                     <input type="text" id="serviceId" placeholder="Service ID (例如 service_xxx)" class="w-full bg-slate-900 border border-slate-700 rounded p-3 text-sm focus:border-indigo-500 focus:outline-none transition">
                     <input type="text" id="templateId" placeholder="Template ID (例如 template_xxx)" class="w-full bg-slate-900 border border-slate-700 rounded p-3 text-sm focus:border-indigo-500 focus:outline-none transition">
-                    <input type="text" id="publicKey" placeholder="Public Key (API Key)" class="w-full bg-slate-900 border border-slate-700 rounded p-3 text-sm focus:border-indigo-500 focus:outline-none transition">
+                    <input type="password" id="publicKey" placeholder="Public Key (API Key)" class="w-full bg-slate-900 border border-slate-700 rounded p-3 text-sm focus:border-indigo-500 focus:outline-none transition">
                 </div>
                 <div class="mt-4 bg-indigo-900/30 p-3 rounded text-xs text-indigo-200">
-                    <p>💡 提示: 在 EmailJS 后台创建模板时，请使用 <code>{{to_name}}</code>, <code>{{subject}}</code>, <code>{{message}}</code> 作为变量。</p>
+                    <p>💡 提示: 系统会自动记住你的配置，下次无需重新输入。</p>
                 </div>
             </div>
 
@@ -86,7 +88,32 @@
     </div>
 
     <script>
-        // 实时更新邮箱数量
+        // --- 核心功能：自动保存与加载配置 ---
+        window.onload = function() {
+            const savedService = localStorage.getItem('qb_service_id');
+            const savedTemplate = localStorage.getItem('qb_template_id');
+            const savedKey = localStorage.getItem('qb_public_key');
+
+            if (savedService) document.getElementById('serviceId').value = savedService;
+            if (savedTemplate) document.getElementById('templateId').value = savedTemplate;
+            if (savedKey) document.getElementById('publicKey').value = savedKey;
+
+            if (savedService && savedTemplate && savedKey) {
+                document.getElementById('savedBadge').classList.remove('hidden');
+            }
+        };
+
+        function saveConfig() {
+            const serviceId = document.getElementById('serviceId').value.trim();
+            const templateId = document.getElementById('templateId').value.trim();
+            const publicKey = document.getElementById('publicKey').value.trim();
+
+            if (serviceId) localStorage.setItem('qb_service_id', serviceId);
+            if (templateId) localStorage.setItem('qb_template_id', templateId);
+            if (publicKey) localStorage.setItem('qb_public_key', publicKey);
+        }
+        // ------------------------------------
+
         document.getElementById('emailList').addEventListener('input', function(e) {
             const lines = e.target.value.split('\n').filter(line => line.trim() !== '');
             document.getElementById('countBadge').innerText = `${lines.length} 个联系人`;
@@ -131,10 +158,12 @@
                 return;
             }
 
+            // 保存配置到本地缓存
+            saveConfig();
+
             // 初始化 EmailJS
             emailjs.init(publicKey);
 
-            // 处理邮箱列表
             const emails = emailText.split('\n').filter(line => line.trim() !== '');
             const total = emails.length;
             
@@ -146,17 +175,15 @@
             clearLog();
             addLog(`🚀 任务开始，共 ${total} 封邮件`);
 
-            // 3. 循环发送
             for (let i = 0; i < total; i++) {
                 const email = emails[i].trim();
                 
                 try {
-                    // 发送逻辑
                     await emailjs.send(serviceId, templateId, {
-                        to_email: email,      // 对应 EmailJS 模板中的 {{to_email}}
-                        to_name: email.split('@')[0], // 简单的名字提取，对应 {{to_name}}
-                        subject: subject,     // 对应 {{subject}}
-                        message: message      // 对应 {{message}}
+                        to_email: email,
+                        to_name: email.split('@')[0],
+                        subject: subject,
+                        message: message
                     });
                     
                     addLog(`✅ 发送成功: ${email}`, 'success');
@@ -165,11 +192,10 @@
                     addLog(`❌ 发送失败: ${email} - ${error.text || '未知错误'}`, 'error');
                 }
 
-                // 更新进度条
                 const percent = Math.round(((i + 1) / total) * 100);
                 progressBar.style.width = `${percent}%`;
 
-                // ⚠️ 关键：稍微等待一下，防止触发频率限制 (500ms)
+                // 强制间隔 500ms，防止触发限制
                 await new Promise(resolve => setTimeout(resolve, 500));
             }
 
