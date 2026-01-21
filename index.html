@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QuickBlast Pro - Ultimate</title>
+    <title>QuickBlast Pro - GAPS Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script>
@@ -46,8 +46,8 @@
                     </svg>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-bold text-white tracking-tight">QuickBlast <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">ULTIMATE</span></h1>
-                    <p class="text-xs text-slate-500 font-medium tracking-wide">SMART SENDER V3.0</p>
+                    <h1 class="text-2xl font-bold text-white tracking-tight">QuickBlast <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">PRO</span></h1>
+                    <p class="text-xs text-slate-500 font-medium tracking-wide">SMART BATCH SENDER</p>
                 </div>
             </div>
             <div id="statusIndicator" class="hidden flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-500/10 border border-green-500/20">
@@ -96,17 +96,9 @@
                     <div class="space-y-4">
                         <div>
                             <label class="block text-[10px] uppercase font-bold text-slate-500 mb-1 ml-1">Subject (标题)</label>
-                            <input type="text" id="emailSubject" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-3 text-sm text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition outline-none placeholder-slate-600 font-medium" placeholder="Bold header will be created automatically...">
+                            <input type="text" id="emailSubject" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-3 text-sm text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition outline-none placeholder-slate-600 font-medium" placeholder="Enter email subject...">
                         </div>
                         
-                        <div>
-                            <label class="block text-[10px] uppercase font-bold text-indigo-400 mb-1 ml-1 flex items-center gap-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
-                                Attachment Link (Optional)
-                            </label>
-                            <input type="text" id="attachLink" class="w-full bg-indigo-900/20 border border-indigo-500/30 rounded-lg px-4 py-3 text-sm text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition outline-none placeholder-indigo-300/30" placeholder="Paste Google Drive / Website Link here for download button...">
-                        </div>
-
                         <div>
                             <label class="block text-[10px] uppercase font-bold text-slate-500 mb-1 ml-1">Message (正文)</label>
                             <textarea id="emailBody" rows="8" class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-3 text-sm text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition outline-none placeholder-slate-600 resize-none leading-relaxed" placeholder="Type your message here..."></textarea>
@@ -224,7 +216,6 @@
             
             const subject = document.getElementById('emailSubject').value;
             const message = document.getElementById('emailBody').value;
-            const attachLink = document.getElementById('attachLink').value.trim();
             const emailText = processEmailList(document.getElementById('emailList').value);
 
             if (!serviceId || !templateId || !publicKey) { alert('Missing Config'); return; }
@@ -252,8 +243,7 @@
                         to_email: email,
                         to_name: email.split('@')[0],
                         subject: subject,
-                        message: message,
-                        attach_link: attachLink
+                        message: message
                     });
                     addLog(`[200 OK] Sent to: ${email}`, 'success');
                 } catch (error) {
